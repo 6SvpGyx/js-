@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>轮播图</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .container {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      margin: 100px auto 0 auto;
+      box-shadow: 0 0 5px green;
+      overflow: hidden;
+    }
+
+    .wrap {
+      position: absolute;
+      width: 4200px;
+      height: 400px;
+      z-index: 1;
+    }
+
+    .container .wrap img {
+      float: left;
+      width: 600px;
+      height: 400px;
+      cursor: pointer;
+    }
+
+    .container .wrap img {
+      cursor: grabbing;
+      cursor: -webkit-grabbing;
+      transition: .5s;
+    }
+
+    .container .wrap img:hover {
+      transform: scale(1.2);
+    }
+
+    .container .buttons {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 30px;
+      /* width: 100px; */
+      height: 10px;
+      z-index: 2;
+    }
+
+    .container .buttons span {
+      margin-left: 5px;
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: green;
+      text-align: center;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .container .buttons span.on {
+      background-color: red;
+    }
+
+    .container .arrow {
+      position: absolute;
+      top: 35%;
+      color: green;
+      padding: 0px 14px;
+      border-radius: 50%;
+      font-size: 50px;
+      z-index: 2;
+      display: none;
+    }
+
+    .container .arrow_left {
+      left: 10px;
+    }
+
+    .container .arrow_right {
+      right: 10px;
+    }
+
+    .container:hover .arrow {
+      display: block;
+    }
+
+    .container .arrow:hover {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="wrap">
+      <img src="http://pic29.nipic.com/20130601/12122227_123051482000_2.jpg" alt="">
+      <img src="http://pic40.nipic.com/20140413/12524762_163417225134_2.jpg" alt="">
+      <img src="http://pic18.nipic.com/20111213/8791344_093424951000_2.jpg" alt="">
+      <img src="http://pic37.nipic.com/20140113/52770_141308612000_2.jpg" alt="">
+      <img src="http://img1.3lian.com/2015/a1/51/d/153.jpg" alt="">
+    </div>
+    <div class="buttons">
+      <span class="on"></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <a href="javascript:;" class="arrow arrow_left">&lt;</a>
+    <a href="javascript:;" class="arrow arrow_right">&gt;</a>
+  </div>
+  <script>
+    let box = document.querySelector('.wrap');
+    let btns = document.querySelectorAll('.arrow');
+    let imgs = document.getElementsByTagName('img');
+    let imgLen = document.getElementsByTagName('img').length;
+    let btnWarp = document.querySelector('.buttons');
+    let spans = document.querySelector('.buttons').getElementsByTagName('span');
+    let leftBtn = btns[0];
+    let rightBtn = btns[1];
+    let imgIndex = 0;
+    let timer;
+
+    window.onload = () =>{
+      clearInterval(timer);
+      autoPlay();
+    }
+
+    rightBtn.addEventListener('click', () => {
+      rightPlay()
+    },false)
+
+    leftBtn.addEventListener('click', () => {
+      leftPlay()
+    },false)
+
+    for ( var i=0; i<btns.length; i++ ) {
+      btns[i].addEventListener('mousemove',()=>{
+        clearInterval(timer);
+      })
+      btns[i].addEventListener('mouseleave',()=>{
+        autoPlay();
+      })
+    }
+
+    box.addEventListener('mousemove',()=>{
+      clearInterval(timer);
+    },false)
+
+    box.addEventListener('mouseleave',()=>{
+      autoPlay();
+    },false)
+
+    for( var i=0; i<imgs.length; i++ ){
+      imgs[i].addEventListener('mousemove',function(){
+        for ( let j=0; j<imgs.length; j++ ) {
+          imgs[j].classList.remove('active')
+          this.classList.add('active');
+        }
+      })
+      imgs[i].addEventListener('mouseleave',()=>{
+        for ( let j=0; j<imgs.length; j++ ) {
+          imgs[j].classList.remove('active')
+        }
+      })
+    }
+
+    for (let i = 0; i < spans.length; i++) {
+      spans[i].addEventListener('mousemove', function () {
+        console.log
+        for (let j = 0; j < spans.length; j++) {
+          imgIndex = i;
+          spans[j].classList.remove('on');
+          this.classList.add('on');
+          box.style.transform = 'translate3d(' + -(imgIndex * 600) + 'px, 0, 0)';
+          box.style.transition = 'transform .4s ease-out';
+        }
+      })
+    }
+
+    function rightPlay() {
+      imgIndex++;
+      if (imgIndex > imgLen - 1) {
+        imgIndex = 0;
+      }
+        box.style.transform = 'translate3d(' + -(imgIndex * 600) + 'px, 0, 0)';
+        box.style.transition = 'transform .4s ease-out';
+      change();
+    }
+
+    function leftPlay() {
+      imgIndex--;
+      if (imgIndex < 0) {
+        imgIndex = imgLen - 1;
+      }
+      box.style.transform = 'translate3d(' + -(imgIndex * 600) + 'px, 0, 0)';
+      box.style.transition = 'transform .4s ease-out';
+      change();
+    }
+
+    function autoPlay() {
+      timer = setInterval(() => {
+        rightPlay();
+      }, 1500);
+    }
+
+    function change() {
+      for (var i = 0; i < spans.length; i++) {
+        spans[i].classList.remove('on')
+        spans[imgIndex].classList.add('on')
+      }
+    }
+  </script>
+</body>
+
+</html>
